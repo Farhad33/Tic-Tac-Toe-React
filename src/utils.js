@@ -1,69 +1,48 @@
-export const buildBoard = (num) => {
+export const buildBoard = (size) => {
     let board = []
-    for(let row = 0; num > row; row++) {
-        let rowArray = []
-        for(let column = 0; num > column; column++) {
-            rowArray.push(' ')
-        }
-        board.push(rowArray)
+    for (let i = 0; i < size; i++) {
+        board.push([...Array(size)])
     }
     return board
 }
 
-function checkDiagonalWinner(board) {
-    let n = board.length;
-    let mainDiagonal = true, antiDiagonal = true;
-
-    for (let i = 0; i < n; i++) {
-        if (board[i][i] !== board[0][0] || board[i][i] === " ")
-            mainDiagonal = false;
-        if (board[i][n - 1 - i] !== board[0][n - 1] || board[i][n - 1 - i] === " ")
-            antiDiagonal = false;
+const checkArray = (board) => {
+    for(const row of board) {
+        let set = new Set(row)
+        if(set.size === 1 && !set.has(undefined)) return true
     }
-
-    if (mainDiagonal) return `${board[0][0]} Wins!`;
-    if (antiDiagonal) return `${board[0][n - 1]} Wins!`;
-
-    return '';
+    return false
 }
 
-export function checkGameStatus(board, firstPlayer, secondPlayer) {
-    for(let rowIndex = 0; board.length > rowIndex; rowIndex++) {
-        let rowCounter = {}
-        let columnCounter = {}
-        for(let columnIndex = 0; board.length > columnIndex; columnIndex++) {
-    
-          // check rowCell
-          let rowCell = board[rowIndex][columnIndex]
-          if(rowCell !== ' ') {
-            rowCounter[rowCell] = rowCounter[rowCell] ? rowCounter[rowCell] + 1 : 1
-          }
-    
-          // check columnCell
-          let columnCell = board[columnIndex][rowIndex]
-          if(columnCell !== ' ') {
-            columnCounter[columnCell] = columnCounter[columnCell] ? columnCounter[columnCell] + 1 : 1
-          }
-    
-          if(rowCounter[firstPlayer] === board.length || columnCounter[firstPlayer] === board.length ) {
-            return `${firstPlayer} Wins!`
-          }
-          if(rowCounter[secondPlayer] === board.length || columnCounter[secondPlayer] === board.length ) {
-            return `${secondPlayer} Wins!`
-          }
-    
-        }
+export function checkGameStatus(board) {
+    // check rows
+    if(checkArray(board)) return true
 
-        // check diagonal
-        var mainDiagonal = true, antiDiagonal = true;
-        if (board[rowIndex][rowIndex] !== board[0][0] || board[rowIndex][rowIndex] === " ")
-            mainDiagonal = false;
-        if (board[rowIndex][board.length - 1 - rowIndex] !== board[0][board.length - 1] || board[rowIndex][board.length - 1 - rowIndex] === " ")
-            antiDiagonal = false;
-    
-      }
-      if (mainDiagonal) return `${board[0][0]} Wins!`;
-      if (antiDiagonal) return `${board[0][board.length - 1]} Wins!`;
-  
-      return ''
+    // check columns
+    let newboard = []
+    for (let i = 0; i < board.length; i++) {
+        let newRow = []
+        for (let j = 0; j < board.length; j++) {
+            const cell = board[j][i]
+            newRow.push(cell)
+        }
+        newboard.push(newRow)
+    }
+    if(checkArray(newboard)) return true
+
+    // check diagonals
+    newboard = []
+    let counter = board.length - 1
+    let firstRow = []
+    let secondRow = []
+    for (let i = 0; i < board.length; i++) {
+        firstRow.push(board[i][i])
+        secondRow.push(board[counter][i])
+        counter--
+    }
+    newboard.push(firstRow)
+    newboard.push(secondRow)
+    if(checkArray(newboard)) return true
+
+    return false
 }

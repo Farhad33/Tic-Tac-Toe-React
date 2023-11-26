@@ -3,28 +3,29 @@ import styled from 'styled-components'
 import { buildBoard, checkGameStatus } from './utils'
 
 export default function App() {
-  const boardLength = 4
+  let boardLength = 3
   const [board, setBoard] = useState(buildBoard(boardLength))
   const [gameStatus, setGameStatus] = useState('')
   const firstPlayer = 'X'
   const secondPlayer = 'O'
-  const playerTurn = useRef(firstPlayer)
+  const player = useRef(firstPlayer)
 
-  const turn = `it's ${playerTurn.current} turn`
+  const turn = `it's ${player.current} turn`
 
   const handleCellOnClick = (rowIndex, cellIndex) => {
     let newBoard = [...board]
-    newBoard[rowIndex][cellIndex] = playerTurn.current
+    newBoard[rowIndex][cellIndex] = player.current
     setBoard(newBoard)
-    let result = checkGameStatus(board, firstPlayer, secondPlayer)
-    if(result) {
-      setGameStatus(result)
+
+    if(checkGameStatus(board)) {
+      setGameStatus(`${player.current} wins!`)
+    } else {
+      player.current = player.current === firstPlayer ? secondPlayer : firstPlayer
     }
-    playerTurn.current = playerTurn.current === firstPlayer ? secondPlayer : firstPlayer
   }
 
   const handleNewGame = () => {
-    playerTurn.current = firstPlayer
+    player.current = firstPlayer
     setBoard(buildBoard(boardLength))
     setGameStatus('')
   }
